@@ -1,0 +1,30 @@
+#!/bin/bash
+
+readonly IMAGE=eightycolumns/keyboard_demo:1.0.0
+
+main() {
+  image_exists || build_image
+  build_keyboard_demo
+}
+
+image_exists() {
+  docker images | grep -q "${IMAGE}"
+}
+
+build_image() {
+  docker build --tag "${IMAGE}" "${PWD}"
+}
+
+build_keyboard_demo() {
+  docker run \
+    --interactive \
+    --tty \
+    --rm \
+    --user csound \
+    --volume "${PWD}:/home/csound/project" \
+    --workdir /home/csound/project \
+    "${IMAGE}" \
+    make
+}
+
+[ "${BASH_SOURCE[0]}" == "$0" ] && main "$@"
