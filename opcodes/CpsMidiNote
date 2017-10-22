@@ -1,0 +1,9 @@
+#ifndef CPS_MIDI_NOTE
+#define CPS_MIDI_NOTE # 1 #
+
+opcode CpsMidiNote, i, i
+  iMidiNote xin
+  xout pow(2, (iMidiNote - 69) / 12) * 440
+endop
+
+#end
