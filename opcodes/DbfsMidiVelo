@@ -1,0 +1,9 @@
+#ifndef DBFS_MIDI_VELO
+#define DBFS_MIDI_VELO # 1 #
+
+opcode DbfsMidiVelo, i, ii
+  iMidiVelo, iDbRange xin
+  xout 0 - iDbRange * (1 - iMidiVelo / 127)
+endop
+
+#end
