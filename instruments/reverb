@@ -1,0 +1,17 @@
+alwayson "reverb"
+
+instr reverb
+  aDryL = gaReverbBusL
+  aDryR = gaReverbBusR
+
+  denorm aDryL
+  denorm aDryR
+
+  aWetL, aWetR freeverb aDryL, aDryR, 0.75, 1, sr
+
+  gaMixBusL += aWetL
+  gaMixBusR += aWetR
+
+  gaReverbBusL = 0
+  gaReverbBusR = 0
+endin
