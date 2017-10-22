@@ -1,0 +1,61 @@
+#include "opcodes/CpsMidiNote"
+#include "opcodes/DbfsMidiVelo"
+#include "opcodes/KeyTrackingFactor"
+#include "opcodes/Osc"
+#include "opcodes/VeloTrackingFactor"
+
+instr keyboard
+  iDur = p3
+  iMidiVelo = p4
+  iMidiNote = p5
+
+  iDbRange = 24
+  iDbfs DbfsMidiVelo iMidiVelo, iDbRange
+  iGain = 0
+  iDbfs += iGain
+  iAmp ampdbfs iDbfs
+
+  iMinMidiNote = 36
+  iMaxMidiNote = 96
+
+  if (iMidiNote < iMinMidiNote || iMidiNote > iMaxMidiNote) then
+    iCps = 0
+  else
+    iCps CpsMidiNote iMidiNote
+  endif
+
+  iKtf KeyTrackingFactor iMidiNote, iMinMidiNote, iMaxMidiNote
+  iVtf VeloTrackingFactor iMidiVelo
+
+  iMinAttack = 0.001
+  iMaxAttack = 0.01
+  iAttack = (iMaxAttack - iMinAttack) * (1 - iKtf) * (1 - iVtf) + iMinAttack
+
+  iMinDecay = 10
+  iMaxDecay = 20
+  iDecay = (iMaxDecay - iMinDecay) * (1 - iKtf) * iVtf + iMinDecay
+
+  iMinRelease = 0.1
+  iMaxRelease = 0.5
+  iRelease = (iMaxRelease - iMinRelease) * (1 - iKtf) * iVtf + iMinRelease
+
+  aOsc Osc iCps, iAmp, iAttack, iDecay, iRelease, iKtf, iVtf
+
+  aOscDetunedLo Osc iCps * cent(-3), iAmp, iAttack, iDecay, iRelease, iKtf, iVtf
+  aOscDetunedHi Osc iCps * cent(+7), iAmp, iAttack, iDecay, iRelease, iKtf, iVtf
+
+  aChorus = aOsc * 0.33 + aOscDetunedLo * 0.33 + aOscDetunedHi * 0.33
+
+  kXfadeEnv transegr 1, iAttack, 0, 1, iDecay, -10, 0, iRelease, 0, 0
+  aOut = aChorus * kXfadeEnv + aOsc * (1 - kXfadeEnv)
+
+  aOut butterhp aOut, 160
+  aOut pareq aOut, 250, ampdb(-6), 0.7
+
+  iReverbLevel = 0.75
+  gaReverbBusL += (aOut * iReverbLevel)
+  gaReverbBusR += (aOut * iReverbLevel)
+
+  gaMixBusL += aOut
+  gaMixBusR += aOut
+endin

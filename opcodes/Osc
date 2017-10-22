@@ -1,0 +1,33 @@
+#ifndef OSC
+#define OSC # 1 #
+
+opcode Modulator, a, iiki
+  iCps, iIndex, kEnv, iFeedback xin
+
+  kPhasor phasor iCps
+  aPhaseMod init 0
+  aPhaseMod *= iFeedback
+  aModulator tablei kPhasor + aPhaseMod, giSinFt, 1, 0, 1
+  iIndex /= $TWO_PI
+  aPhaseMod = aModulator * iIndex * kEnv
+
+  xout aPhaseMod
+endop
+
+opcode Osc, a, iiiiiii
+  iCps, iAmp, iAttack, iDecay, iRelease, iKtf, iVtf xin
+
+  kAmpEnv transegr 0, iAttack, 0, 1, iDecay, -10, 0, iRelease, 0, 0
+  kArtEnv transegr 0, iAttack, 0, 1, iDecay, -90, 0, iRelease, 0, 0
+
+  aModulatorA Modulator iCps * 1, 1.0 * (1 - iKtf) * iVtf, kAmpEnv, 1
+  aModulatorB Modulator iCps * 2, 0.5 * (1 - iKtf) * iVtf, kAmpEnv, 0
+  aModulatorC Modulator iCps * 9, 0.1 * (1 - iKtf) * iVtf, kArtEnv, 0
+
+  aModulators = aModulatorA + aModulatorB + aModulatorC
+  aCarrier tablei phasor(iCps) + aModulators, giSinFt, 1, 0, 1
+
+  xout aCarrier * iAmp * kAmpEnv
+endop
+
+#end
