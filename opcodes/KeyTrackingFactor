@@ -1,0 +1,9 @@
+#ifndef KEY_TRACKING_FACTOR
+#define KEY_TRACKING_FACTOR # 1 #
+
+opcode KeyTrackingFactor, i, iii
+  iMidiNote, iMinMidiNote, iMaxMidiNote xin
+  xout (iMidiNote - iMinMidiNote) / (iMaxMidiNote - iMinMidiNote)
+endop
+
+#end
