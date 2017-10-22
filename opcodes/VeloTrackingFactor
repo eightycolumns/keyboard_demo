@@ -1,0 +1,9 @@
+#ifndef VELO_TRACKING_FACTOR
+#define VELO_TRACKING_FACTOR # 1 #
+
+opcode VeloTrackingFactor, i, i
+  iMidiVelo xin
+  xout iMidiVelo / 127
+endop
+
+#end
