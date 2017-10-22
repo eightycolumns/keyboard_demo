@@ -1,0 +1,16 @@
+alwayson "mix"
+
+instr mix
+  aOutL = gaMixBusL
+  aOutR = gaMixBusR
+
+  iCutoff = 16000
+
+  aOutL butterlp aOutL, iCutoff
+  aOutR butterlp aOutR, iCutoff
+
+  outs aOutL, aOutR
+
+  gaMixBusL = 0
+  gaMixBusR = 0
+endin
