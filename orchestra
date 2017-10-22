@@ -1,0 +1,16 @@
+nchnls = 2
+
+#define TWO_PI # ($M_PI * 2) #
+
+giFtLen pow 2, 16
+giSinFt ftgenonce 0, 0, giFtLen, 10, 1
+
+gaReverbBusL init 0
+gaReverbBusR init 0
+
+gaMixBusL init 0
+gaMixBusR init 0
+
+#include "instruments/keyboard"
+#include "instruments/reverb"
+#include "instruments/mix"
